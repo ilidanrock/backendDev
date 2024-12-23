@@ -1,23 +1,28 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "dist/index.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "headers": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/(.*)", 
-      "destination": "dist/index.js",
+      "src": "dist/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "dist/index.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "*" 
+          "value": "*"
         },
         {
           "key": "Access-Control-Allow-Methods",
-          "value": "GET, OPTIONS, POST, PUT, DELETE" 
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
         },
         {
           "key": "Access-Control-Allow-Headers",
@@ -27,4 +32,3 @@
     }
   ]
 }
-  
