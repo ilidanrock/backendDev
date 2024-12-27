@@ -1,4 +1,5 @@
-import express from 'express';
+import express , { Request, Response } from 'express';
+import * as QueryString from 'qs';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -7,7 +8,7 @@ app.get('/', (req, res) => {
   res.send('Hello from TypeScript with Express!');
 });
 
-app.get('/efficiency/data', (req, res) => {
+app.get('/efficiency/data', (req: Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>, res: Response) => {
   try {
     const { query } = req;
     const { siteId, equipmentType, date } = query;
@@ -16,7 +17,7 @@ app.get('/efficiency/data', (req, res) => {
       throw res.status(400).send('Missing required parameters');
     }
 
-    if (equipmentType === "chillers") {
+    if (equipmentType === "chiller") {
       const baseDate = new Date(date as string); // Use the provided date as the base
       baseDate.setHours(0, 0, 0, 0); // Reset to the start of the day (00:00)
 
