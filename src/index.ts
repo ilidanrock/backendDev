@@ -52,7 +52,7 @@ app.get('/efficiency/data', (req: Request<{}, any, any, QueryString.ParsedQs, Re
       });
     }
 
-    if (equipmentType === "cwPump" || equipmentType === "chwPump") {
+    if (equipmentType === "cwPumps" || equipmentType === "chwPumps") {
       const baseDate = new Date(date as string); // Use the provided date as the base
       baseDate.setHours(0, 0, 0, 0); // Reset to the start of the day (00:00)
 
