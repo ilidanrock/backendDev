@@ -198,7 +198,7 @@ app.get("/analytics/data", (req: Request<{}, any, any, QueryString.ParsedQs, Rec
     const baseDate = new Date(date as string);
     baseDate.setHours(0, 0, 0, 0);
 
-    const response = Array.from({ length: 11 }, (_, i) => {
+    const response = Array.from({ length: 22 }, (_, i) => {
       const currentDate = new Date(baseDate);
       currentDate.setHours(currentDate.getHours() + i * 2);
 
@@ -209,26 +209,28 @@ app.get("/analytics/data", (req: Request<{}, any, any, QueryString.ParsedQs, Rec
       const minutes = currentDate.getMinutes().toString().padStart(2, "0");
       const formattedDate = `${month}-${day}-${year} ${hours}:${minutes}`;
 
-      return equipmentList.reduce((acc: any, equipment: string) => {
-        acc[`data`].push({
-          [`${equipment}_cw_leaving_temp`]: (Math.random() * (85 - 75) + 75).toFixed(2),
-          [`${equipment}_cw_entering_temp`]: (Math.random() * (80 - 70) + 70).toFixed(2),
-          [`${equipment}_chw_entering_temp`]: (Math.random() * (60 - 50) + 50).toFixed(2),
-          [`${equipment}_chw_leaving_temp`]: (Math.random() * (55 - 45) + 45).toFixed(2),
-          [`${equipment}_efficiency`]: (Math.random() * (0.75 - 0.48) + 0.48).toFixed(2),
-          [`${equipment}_tonnage`]: (Math.random() * (600 - 500) + 500).toFixed(0),
-          [`${equipment}_vfd_speed`]: (Math.random() * (80 - 60) + 60).toFixed(0),
-          [`${equipment}_running_load`]: (Math.random() * (40 - 30) + 30).toFixed(0),
-          [`${equipment}_status`]: i % 2 ? "ON" : "OFF",
-          date: formattedDate,
-          [`${equipment}_flow_rate`]: (Math.random() * (1400 - 1200) + 1200).toFixed(0),
-        });
+      const data = equipmentList.reduce((acc: any, equipment: string) => {
+        const formattedEquipment = equipment.replace(/(\d+)/, '_$1');
+        acc[`${formattedEquipment}_cw_leaving_temp`] = (Math.random() * (85 - 75) + 75).toFixed(2);
+        acc[`${formattedEquipment}_cw_entering_temp`] = (Math.random() * (80 - 70) + 70).toFixed(2);
+        acc[`${formattedEquipment}_chw_entering_temp`] = (Math.random() * (60 - 50) + 50).toFixed(2);
+        acc[`${formattedEquipment}_chw_leaving_temp`] = (Math.random() * (55 - 45) + 45).toFixed(2);
+        acc[`${formattedEquipment}_efficiency`] = (Math.random() * (0.75 - 0.48) + 0.48).toFixed(2);
+        acc[`${formattedEquipment}_tonnage`] = (Math.random() * (600 - 500) + 500).toFixed(0);
+        acc[`${formattedEquipment}_vfd_speed`] = (Math.random() * (80 - 60) + 60).toFixed(0);
+        acc[`${formattedEquipment}_running_load`] = (Math.random() * (40 - 30) + 30).toFixed(0);
+        acc[`${formattedEquipment}_status`] = Math.floor(Math.random() * 2) ? "ON" : "OFF";
+        acc[`${formattedEquipment}_flow_rate`] = (Math.random() * (1400 - 1200) + 1200).toFixed(0);
+        acc["date"] = formattedDate;
         return acc;
-      }, { equipmentId: equipmentList, data: [] });
+      }, {});
+
+      return data;
     });
 
     res.status(200).json({
-      rows: response,
+      equipments: equipmentList,
+      data: response,
       status: "success",
       messages: "Data fetched successfully",
     });
