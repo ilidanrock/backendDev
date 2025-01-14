@@ -240,6 +240,93 @@ app.get("/analytics/data", (req: Request<{}, any, any, QueryString.ParsedQs, Rec
   }
 });
 
+app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>, res: any) => {
+  try {
+    const { query } = req;
+    const { siteId } = query;
+
+    if (!siteId ) {
+      return res.status(400).send("Missing required parameters");
+    }
+    const notificationTypes = [
+      {
+      cause: "Chiller efficiency range should be between 0.61 and 0.65",
+      equipment: "Chiller 2",
+      icon: "Zap",
+      location: "Chiller Plant",
+      message: "Chiller Efficiency Out of Range",
+      notificationType: "Efficiency",
+      solution: "Chiller efficiency range should be between 0.61 and 0.65",
+      },
+      {
+      cause: "Chiller efficiency range should be between 0.61 and 0.65",
+      equipment: "Chiller 1",
+      icon: "Zap",
+      location: "Chiller Plant",
+      message: "Chiller Efficiency Out of Range",
+      notificationType: "Efficiency",
+      solution: "Chiller efficiency range should be between 0.61 and 0.65",
+      },
+      {
+      cause: "High energy consumption detected",
+      equipment: "Pump 3",
+      icon: "BatteryCharging",
+      location: "Basement",
+      message: "Pump Overload Detected",
+      notificationType: "Energy",
+      solution: "Inspect and reduce pump load to normal levels.",
+      },
+      {
+      cause: "Cooling tower fan speed out of range",
+      equipment: "Cooling Tower 1",
+      icon: "Wind",
+      location: "Roof",
+      message: "Fan Speed Out of Range",
+      notificationType: "Maintenance",
+      solution: "Adjust fan speed to stay within optimal range.",
+      },
+      {
+      cause: "Temperature sensor malfunction detected",
+      equipment: "Sensor 5",
+      icon: "Thermometer",
+      location: "Main Hall",
+      message: "Sensor Reading Error",
+      notificationType: "Sensor",
+      solution: "Replace or recalibrate the temperature sensor.",
+      },
+    ];
+
+    const notifications = Array.from({ length: 30 }, () => {
+      const baseNotification = {
+      cause: "",
+      duration: `${(Math.random() * 10 + 1).toFixed(2)}h`,
+      equipment: "",
+      icon: "",
+      location: "",
+      message: "",
+      notificationType: "",
+      priority: ["low", "medium", "high"][Math.floor(Math.random() * 3)],
+      siteId: `p:site:r:${Math.random().toString(36).substring(2, 15)}`,
+      solution: "",
+      monthlyCost: Math.floor(Math.random() * 300 + 100),
+      };
+
+      const randomType = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+      return { ...baseNotification, ...randomType };
+    });
+
+    res.status(200).json({
+      rows: notifications,
+      status: "success",
+      messages: "Data fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error in /notifications/data", error);
+    res.status(500).send("Internal server error");
+  }
+}
+);
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
