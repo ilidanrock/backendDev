@@ -248,11 +248,12 @@ app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs,
     if (!siteId ) {
       return res.status(400).send("Missing required parameters");
     }
+    const icons = ["Settings", "AlertCircle", "Zap", "Droplet"];
     const notificationTypes = [
       {
       cause: "Chiller efficiency range should be between 0.61 and 0.65",
       equipment: "Chiller 2",
-      icon: "Zap",
+      icon: icons[Math.floor(Math.random() * icons.length)],
       location: "Chiller Plant",
       message: "Chiller Efficiency Out of Range",
       notificationType: "Efficiency",
@@ -261,7 +262,7 @@ app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs,
       {
       cause: "Chiller efficiency range should be between 0.61 and 0.65",
       equipment: "Chiller 1",
-      icon: "Zap",
+      icon: icons[Math.floor(Math.random() * icons.length)],
       location: "Chiller Plant",
       message: "Chiller Efficiency Out of Range",
       notificationType: "Efficiency",
@@ -270,7 +271,7 @@ app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs,
       {
       cause: "High energy consumption detected",
       equipment: "Pump 3",
-      icon: "BatteryCharging",
+      icon: icons[Math.floor(Math.random() * icons.length)],
       location: "Basement",
       message: "Pump Overload Detected",
       notificationType: "Energy",
@@ -279,7 +280,7 @@ app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs,
       {
       cause: "Cooling tower fan speed out of range",
       equipment: "Cooling Tower 1",
-      icon: "Wind",
+      icon: icons[Math.floor(Math.random() * icons.length)],
       location: "Roof",
       message: "Fan Speed Out of Range",
       notificationType: "Maintenance",
@@ -288,7 +289,7 @@ app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs,
       {
       cause: "Temperature sensor malfunction detected",
       equipment: "Sensor 5",
-      icon: "Thermometer",
+      icon: icons[Math.floor(Math.random() * icons.length)],
       location: "Main Hall",
       message: "Sensor Reading Error",
       notificationType: "Sensor",
