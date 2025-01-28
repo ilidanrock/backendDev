@@ -328,6 +328,40 @@ app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs,
 }
 );
 
+app.get("/management/tonnage/data", (req: Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>, res: any) => {
+  try {
+    const { query } = req;
+    const { siteId, date } = query;
+
+    if (!siteId || !date) {
+      return res.status(400).send("Missing required parameters");
+    }
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const response = Array.from({ length: 10 }, (_, i) => {
+      const currentDate = new Date(date as string);
+      currentDate.setMonth(currentDate.getMonth() + i);
+
+      const month = months[currentDate.getMonth()];
+      const day = currentDate.getDate().toString().padStart(2, "0");
+
+      return {
+        date: `${day} ${month}`,
+        currentYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
+        previousYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
+      };
+    });
+
+    res.status(200).json({
+      series: response,
+      status: "success",
+      messages: "Data fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error in /management/tonnage/data", error);
+    res.status(500).send("Internal server error");
+  }
+});
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
