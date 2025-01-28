@@ -331,26 +331,67 @@ app.get("/notifications/data", (req: Request<{}, any, any, QueryString.ParsedQs,
 app.get("/management/tonnage/data", (req: Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>, res: any) => {
   try {
     const { query } = req;
-    const { siteId, date } = query;
+    const { siteId, period } = query;
 
-    if (!siteId || !date) {
+    if (!siteId || !period) {
       return res.status(400).send("Missing required parameters");
     }
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const response = Array.from({ length: 10 }, (_, i) => {
-      const currentDate = new Date(date as string);
-      currentDate.setMonth(currentDate.getMonth() + i);
+    const baseDate = new Date();
+    let response;
 
-      const month = months[currentDate.getMonth()];
-      const day = currentDate.getDate().toString().padStart(2, "0");
+    switch (period) {
+      case "thisMonth":
+        response = Array.from({ length: baseDate.getDate() }, (_, i) => {
+          const currentDate = new Date(baseDate);
+          currentDate.setDate(currentDate.getDate() - i);
 
-      return {
-        date: `${day} ${month}`,
-        currentYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
-        previousYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
-      };
-    });
+          const month = months[currentDate.getMonth()];
+          const day = currentDate.getDate().toString().padStart(2, "0");
+
+          return {
+            date: `${day} ${month}`,
+            currentYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
+            previousYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
+          };
+        });
+        break;
+      case "lastMonth":
+        const lastMonthDate = new Date(baseDate);
+        lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+        const daysInLastMonth = new Date(lastMonthDate.getFullYear(), lastMonthDate.getMonth() + 1, 0).getDate();
+        response = Array.from({ length: daysInLastMonth }, (_, i) => {
+          const currentDate = new Date(lastMonthDate);
+          currentDate.setDate(currentDate.getDate() - i);
+
+          const month = months[currentDate.getMonth()];
+          const day = currentDate.getDate().toString().padStart(2, "0");
+
+          return {
+            date: `${day} ${month}`,
+            currentYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
+            previousYearTons: Math.floor(Math.random() * (100000 - 20000) + 20000),
+          };
+        });
+        break;
+      case "thisYear":
+        response = Array.from({ length: baseDate.getMonth() + 1 }, (_, i) => {
+          const currentDate = new Date(baseDate);
+          currentDate.setMonth(currentDate.getMonth() - i);
+
+          const month = months[currentDate.getMonth()];
+
+          return {
+            date: `${month}`,
+            currentYearTons: Math.floor(Math.random() * (1000000 - 200000) + 200000),
+            previousYearTons: Math.floor(Math.random() * (1000000 - 200000) + 200000),
+          };
+        });
+        break;
+      default:
+        return res.status(400).send("Invalid period value");
+    }
 
     res.status(200).json({
       series: response,
