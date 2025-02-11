@@ -403,6 +403,78 @@ app.get("/management/tonnage/data", (req: Request<{}, any, any, QueryString.Pars
     res.status(500).send("Internal server error");
   }
 });
+
+app.get("/management/energy/cost/data", (req: Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>, res: any) => {
+  try {
+    const { query } = req;
+    const { siteId, type } = query;
+
+    if (!siteId || !type) {
+      return res.status(400).send("Missing required parameters");
+    }
+
+    const energyConsumptionData = {
+      monthToDateEnergyConsumption: { label: "Month to Date Energy Consumption", value: (Math.random() * 100000).toFixed(0), unit: "kWh" },
+      projectedEnergyConsumption: {
+        label: "Projected Energy Consumption This Month",
+        value: (Math.random() * 100000).toFixed(0),
+        unit: "kWh",
+        status: {
+          text: `${(Math.random() * 10).toFixed(1)}% Above Target`,
+          color: "text-red-500",
+        },
+      },
+      energyUsageLastMonth: { label: "Energy Consumption Last Month", value: (Math.random() * 100000).toFixed(0), unit: "kWh" },
+      energyUsageYearToDate: { label: "Energy Consumption Year to Date", value: (Math.random() * 100000).toFixed(0), unit: "kWh" },
+      annualEnergySavingsToDate: { label: "Annual Energy Savings to Date", value: (Math.random() * 100000).toFixed(0), unit: "kWh" },
+      totalEnergySavingsFromGoLive: { label: "Total Energy Savings from Go Live", value: (Math.random() * 100000).toFixed(0), unit: "kWh" },
+      chillerPlantPercentage: { label: "Chiller Plant % of Total Energy Usage", value: (Math.random() * 100).toFixed(0), unit: "%" },
+    };
+
+    const energyCostData = {
+      monthToDateEnergyCost: { label: "Month to Date Energy Cost", value: `$ ${(Math.random() * 100000).toFixed(0)}` },
+      projectedEnergyCost: {
+        label: "Projected Energy Cost This Month",
+        value: `$ ${(Math.random() * 100000).toFixed(0)}`,
+        status: {
+          text: `${(Math.random() * 10).toFixed(1)}% Lower than Target`,
+          color: "text-green-600",
+        },
+      },
+      energyCostLastMonth: { label: "Energy Cost Last Month", value: `$ ${(Math.random() * 100000).toFixed(0)}` },
+      energyCostYearToDate: {
+        label: "Energy Cost Year to Date",
+        value: `$ ${(Math.random() * 1000000).toFixed(0)}`,
+        status: {
+          text: `Exceeding budget by ${(Math.random() * 10).toFixed(1)}%`,
+          color: "text-red-600",
+        },
+      },
+      annualCostSavingsToDate: { label: "Annual Cost Savings to Date", value: `$ ${(Math.random() * 100000).toFixed(0)}` },
+      totalCostSavingsFromGoLive: { label: "Total Cost Savings from Go Live", value: `$ ${(Math.random() * 1000000).toFixed(0)}` },
+    };
+
+    let responseData;
+
+    if (type === "consumption") {
+      responseData = energyConsumptionData;
+    } else if (type === "cost") {
+      responseData = energyCostData;
+    } else {
+      return res.status(400).send("Invalid type parameter");
+    }
+
+    res.status(200).json({
+      data: responseData,
+      status: "success",
+      messages: "Data fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error in /management/energy/cost/data", error);
+    res.status(500).send("Internal server error");
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
