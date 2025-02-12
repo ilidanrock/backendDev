@@ -475,6 +475,126 @@ app.get("/management/energy/cost/data", (req: Request<{}, any, any, QueryString.
   }
 });
 
+
+
+const timeOptions = [
+  { value: "this-year", label: "This Year" },
+  { value: "past-year", label: "Past Year" },
+  { value: "last-year", label: "Last Year" },
+  { value: "this-month", label: "This Month" },
+  { value: "past-month", label: "Past Month" },
+  { value: "last-month", label: "Last Month" },
+];
+
+app.get("/management/report/dashboard/data", (req: Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>, res: any) => {
+  try {
+    const { period, siteId } = req.query;
+
+    if (!period || !siteId) {
+      return res.status(400).json({ error: "Missing required parameters: period or siteId" });
+    }
+
+    const validPeriods = timeOptions.map(option => option.value);
+
+    if (!validPeriods.includes(period as string)) {
+      return res.status(400).json({ error: "Invalid period value" });
+    }
+
+    const now = new Date();
+    let energyData: Array<{
+      month?: string;
+      day?: number;
+      consumption: number;
+      demand: number;
+      cost: number;
+      totalCost?: number;
+    }> = [];
+
+    if (period === "this-year") {
+      energyData = Array.from({ length: now.getMonth() + 1 }, (_, i) => {
+        return {
+          month: new Date(0, i).toLocaleString("en-US", { month: "short" }),
+          consumption: parseFloat((Math.random() * 1000).toFixed(2)),
+          demand: parseFloat((Math.random() * 500).toFixed(2)),
+          cost: parseFloat((Math.random() * 1000).toFixed(2)),
+          totalCost: parseFloat((Math.random() * 1000).toFixed(2))
+        };
+      });
+    } else if (period === "past-year") {
+      const pastYearStart = new Date(now);
+      pastYearStart.setFullYear(now.getFullYear() - 1);
+      energyData = Array.from({ length: 12 }, (_, i) => {
+        const date = new Date(pastYearStart);
+        date.setMonth(pastYearStart.getMonth() + i);
+        return {
+          month: date.toLocaleString("en-US", { month: "short" }),
+          consumption: parseFloat((Math.random() * 1000).toFixed(2)),
+          demand: parseFloat((Math.random() * 500).toFixed(2)),
+          cost: parseFloat((Math.random() * 1000).toFixed(2)),
+          totalCost: parseFloat((Math.random() * 1000).toFixed(2))
+        };
+      });
+    } else if (period === "last-year") {
+      energyData = Array.from({ length: 12 }, (_, i) => {
+        return {
+          month: new Date(0, i).toLocaleString("en-US", { month: "short" }),
+          consumption: parseFloat((Math.random() * 1000).toFixed(2)),
+          demand: parseFloat((Math.random() * 500).toFixed(2)),
+          cost: parseFloat((Math.random() * 1000).toFixed(2)),
+          totalCost: parseFloat((Math.random() * 1000).toFixed(2))
+        };
+      });
+    } else if (period === "this-month") {
+      energyData = Array.from({ length: now.getDate() }, (_, i) => {
+        return {
+          day: i + 1,
+          consumption: parseFloat((Math.random() * 100).toFixed(2)),
+          demand: parseFloat((Math.random() * 50).toFixed(2)),
+          cost: parseFloat((Math.random() * 100).toFixed(2)),
+          totalCost: parseFloat((Math.random() * 1000).toFixed(2))
+        };
+      });
+    } else if (period === "past-month") {
+      const pastMonthStart = new Date(now);
+      pastMonthStart.setMonth(now.getMonth() - 1);
+      energyData = Array.from({ length: 30 }, (_, i) => {
+        const date = new Date(pastMonthStart);
+        date.setDate(pastMonthStart.getDate() + i);
+        return {
+          day: date.getDate(),
+          consumption: parseFloat((Math.random() * 100).toFixed(2)),
+          demand: parseFloat((Math.random() * 50).toFixed(2)),
+          cost: parseFloat((Math.random() * 100).toFixed(2)),
+          totalCost: parseFloat((Math.random() * 1000).toFixed(2))
+        };
+      });
+    } else if (period === "last-month") {
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const daysInLastMonth = new Date(lastMonth.getFullYear(), lastMonth.getMonth() + 1, 0).getDate();
+      energyData = Array.from({ length: daysInLastMonth }, (_, i) => {
+        return {
+          day: i + 1,
+          consumption: parseFloat((Math.random() * 100).toFixed(2)),
+          demand: parseFloat((Math.random() * 50).toFixed(2)),
+          cost: parseFloat((Math.random() * 100).toFixed(2)),
+          totalCost: parseFloat((Math.random() * 1000).toFixed(2))
+        };
+      });
+    }
+
+    res.status(200).json({
+      siteId,
+      period,
+      status: "success",
+      energyData
+    });
+  } catch (error) {
+    console.error("Error fetching dashboard data", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
