@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import * as QueryString from "qs";
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+
 /**
  * @openapi
  * openapi: 3.0.0
