@@ -12,12 +12,6 @@
       "destination": "dist/index.js"
     }
   ],
-  "routes": [
-    {
-      "src": "/api-docs/(.*)",
-      "dest": "/api/index.js"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
