@@ -12,6 +12,12 @@
       "destination": "dist/index.js"
     }
   ],
+  "routes": [
+    {
+      "src": "/api-docs/(.*)",
+      "dest": "/api/index.js"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -27,7 +33,8 @@
         {
           "key": "Access-Control-Allow-Headers",
           "value": "Content-Type, Authorization"
-        }
+        },
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     }
   ]

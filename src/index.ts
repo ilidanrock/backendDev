@@ -118,25 +118,18 @@ const swaggerOptions = {
     info: {
       title: "Building Management API",
       version: "1.0.0",
-      description:
-        "Building Management API for fetching data for a building management system",
-      contact: {
-        name: "Luis Rivera",
-        email: "rluis747@gmail.com",
-      },
+      description: "API de gestión de edificios",
     },
     servers: [
-      {
-        url: "http://localhost:3000",
-        description: "Development server",
-      },
+      { url: "https://backend-dev-eta.vercel.app", description: "Production server" },
+      { url: "http://localhost:3000", description: "Development server" },
     ],
   },
-  apis: ["./src/**/*.ts"],
+  apis: ["./src/index.ts"],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 
 app.get("/", (req, res) => {
   res.send("Hello from TypeScript with Express!");
@@ -859,6 +852,10 @@ app.get(
   }
 );
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("%s listening at 3000"); 
 });
+
+export default app;
