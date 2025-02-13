@@ -924,9 +924,34 @@ app.get(
   }
 );
 
-app.get("/management/report/dashboard/savings/data", ()=>{
-  
-})
+app.get("/management/report/dashboard/savings/data", (
+  req: Request<{}, any, any, QueryString.ParsedQs, Record<string, any>>,
+  res: any
+) => {
+  try {
+    const { query } = req;
+    const { siteId } = query;
+
+    if (!siteId ) {
+      return res.status(400).send("Missing required parameters");
+    }
+
+    const data = [
+      { name: "Baseline Annual Energy Cost", value: (Math.random() * 100000).toFixed(0) },
+      { name: "Current Annual Energy Cost", value: (Math.random() * 100000).toFixed(0) },
+      { name: "Target Annual Energy Cost", value: (Math.random() * 100000).toFixed(0) },
+    ];
+
+    res.status(200).json({
+      data,
+      status: "success",
+      messages: "Data fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error in /management/report/dashboard/savings/data", error);
+    res.status(500).send("Internal server error");
+  }
+});
 
 
 app.get("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
