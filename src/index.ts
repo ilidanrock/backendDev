@@ -18,6 +18,77 @@ import swaggerJsdoc from "swagger-jsdoc";
  *     description: Development server
  *
  * paths:
+ *   /management/energy/cost/data:
+ *     get:
+ *       summary: Obtener datos de costo y consumo energético
+ *       description: Retorna información sobre el consumo y costos energéticos en diferentes períodos.
+ *       parameters:
+ *         - name: siteId
+ *           in: query
+ *           description: Identificador del sitio.
+ *           required: true
+ *           schema:
+ *             type: string
+ *         - name: type
+ *           in: query
+ *           description: Tipo de dato solicitado (consumption o cost).
+ *           required: true
+ *           schema:
+ *             type: string
+ *             enum: [consumption, cost]
+ *       responses:
+ *         200:
+ *           description: Datos obtenidos exitosamente.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   data:
+ *                     type: object
+ *                     additionalProperties:
+ *                       type: object
+ *                       properties:
+ *                         label:
+ *                           type: string
+ *                         value:
+ *                           type: string
+ *                         unit:
+ *                           type: string
+ *                         status:
+ *                           type: object
+ *                           properties:
+ *                             text:
+ *                               type: string
+ *                             color:
+ *                               type: string
+ *                   status:
+ *                     type: string
+ *                     example: success
+ *                   messages:
+ *                     type: string
+ *                     example: Data fetched successfully
+ *         400:
+ *           description: Parámetros inválidos o faltantes.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: "Missing required parameters: siteId or type"
+ *         500:
+ *           description: Error interno del servidor.
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: "Internal server error"
+ *
  *   /management/report/dashboard/data:
  *     get:
  *       summary: Obtener datos del dashboard de consumo energético
@@ -109,6 +180,7 @@ import swaggerJsdoc from "swagger-jsdoc";
  *                     type: string
  *                     example: "Internal server error"
  */
+
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -116,9 +188,9 @@ const swaggerOptions = {
   swaggerDefinition: {
     openapi: "3.0.0",
     info: {
-      title: "Building Management API",
+      title: "API",
       version: "1.0.0",
-      description: "API de gestión de edificios",
+      description: "API",
     },
     servers: [
       { url: "https://backend-dev-eta.vercel.app", description: "Production server" },
@@ -852,8 +924,12 @@ app.get(
   }
 );
 
+app.get("/management/report/dashboard/savings/data", ()=>{
+  
+})
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+app.get("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("%s listening at 3000"); 
